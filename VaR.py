@@ -51,6 +51,22 @@ russell['devol_return'] = russell.iloc[:, 0] / \
 # %%
 # Assume that the devolotized return follows t distribution
 # We use MLE to estimate t distribution constant
+# from scipy.special import gamma
+from scipy.stats import t
+from scipy import optimize
+import matplotlib.pyplot as plt
+plt.hist(russell['devol_return'], bins=100)
+print(np.mean(russell['devol_return']))
 
 
-print('Hello')
+def t_logL(x, v):
+    return t.pdf(x, v)
+
+
+# %%
+russell.tail()
+sum(russell['devol_return'])
+
+# %%
+russell.tail()
+russell['devol_return'].to_csv('data.csv')
