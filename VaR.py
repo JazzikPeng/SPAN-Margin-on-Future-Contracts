@@ -52,21 +52,59 @@ russell['devol_return'] = russell.iloc[:, 0] / \
 # Assume that the devolotized return follows t distribution
 # We use MLE to estimate t distribution constant
 # from scipy.special import gamma
+from scipy.special import gamma
 from scipy.stats import t
 from scipy import optimize
 import matplotlib.pyplot as plt
 plt.hist(russell['devol_return'], bins=100)
-print(np.mean(russell['devol_return']))
+# print(np.mean(russell['devol_return']))
+
+# %%
 
 
-def t_logL(x, v):
-    return t.pdf(x, v)
+def loc_scale_t(x, para):
+    mu, sigma, v = para
+    temp1 = gamma((v+1) / 2) / (sigma*np.sqrt(v*np.pi)*gamma(v/2))
+    temp2 = ((v + ((x-mu)/sigma)**2) / v)**(-(v+1)/2)
+    ret = temp1 * temp2
+    return ret
+
+
+# print(t.pdf(0, 5))
+# para = [0, 1, 5]
+# print(loc_scale_t(0, para))
+
+
+def t_logL(para):
+    ret = 1
+    for x in russell['devol_return']:
+        # print(loc_scale_t(x, para))
+        ret = ret + np.log(loc_scale_t(x, para))
+    return -ret
 
 
 # %%
-russell.tail()
-sum(russell['devol_return'])
+# t_logL([0.0399, 0.9151, 8.2777])
+optimized_para = optimize.fmin(t_logL,  np.array([0.02, 0.2, 10]))
+print('The optimized mu, sigma, and v is:', optimized_para)
+print('MatLab Result is:',    [0.0406, 0.9056, 7.3312])
 
 # %%
-russell.tail()
-russell['devol_return'].to_csv('data.csv')
+# Use Optimized t distribution to find upper 99.5% and lower 0.5% tail VaR.
+mu, sigma, v = optimized_para
+upper_tail = t.ppf(0.005, v, loc=mu, scale=sigma)
+lower_tail = t.ppf(0.995, v, loc=mu, scale=sigma)
+print('Upper_tail:', upper_tail, 'Lower_tail', lower_tail)
+risky_tail = max(upper_tail, lower_tail)
+print('The larger tail is', risky_tail)
+
+# %%
+# Compute return, settlement, and suggest margin
+ret = risky_tail * \
+    np.sqrt(russell['return^2'].iloc[-1] - russell['return'].iloc[-1]**2)
+last_settlement = 664  # This is provide by the exchange
+settlement_margin = ret*last_settlement*100
+print('settlement_margin is:', settlement_margin)
+# %%
+sugar.tail()
+# russell['devol_return'].iloc[-1]
