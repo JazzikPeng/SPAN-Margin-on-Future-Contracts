@@ -16,9 +16,7 @@ import numpy as np
 import pandas as pd
 import scipy.stats as st
 import matplotlib.pyplot as plt
-from matplotlib import dates
 from scipy.optimize import newton
-import math
 import datetime
 
 
@@ -88,7 +86,7 @@ for j in range(int(len(date))):
     Y[j] = Time_2_maturity[j]
 
 
-from mpl_toolkits.mplot3d import Axes3D
+# from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 fig = plt.figure()
 ax = fig.gca(projection='3d')
