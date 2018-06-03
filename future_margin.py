@@ -107,7 +107,8 @@ class future:
 
         # Compute Margin
         temp = risky_tail * np.sqrt(ret_sqr[-1] - ret[-1]**2)
-        last_settlement = self.get_last_settlement()  # This is provide by the exchange
+        # This is provide by the exchange
+        last_settlement = self.get_last_settlement()
         multiplier = self.multiplier
         settlement_margin = temp*last_settlement*multiplier
         print('settlement_margin is:', settlement_margin)
@@ -128,6 +129,7 @@ sugar_data = pd.read_excel('Sugar Price.xlsx')
 sugar_data.drop(['Unnamed: 2', 'Unnamed: 3'], axis=1, inplace=True)
 sugar_data = np.array(sugar_data['Sugar #11 future close price'])
 
-# Here I dont know the last settlement, i used the last day's price to represent the settlement price
-sugar = future(sugar_data, settlement=sugar_data[-1])
+# Here I dont know the last settlement, i used the last day's price to
+# represent the settlement price
+sugar = future(sugar_data, settlement=sugar_data[-1], multiplier=1120)
 sugar.margin()
