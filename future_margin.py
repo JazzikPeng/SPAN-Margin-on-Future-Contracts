@@ -8,7 +8,6 @@ __version__ = "1.0.1"
 __maintainer__ = "Zhejian Peng"
 __email__ = "zhejianpeng@yahoo.com"
 __status__ = "Developing"
-
 __update__ =
 '''
 import numpy as np
@@ -47,7 +46,7 @@ class future:
         prices = self.prices
         log_return = []
         for i in range(1, len(prices)):
-            temp = (prices[i] - prices[i-1]) / prices[i-1]
+            temp = np.log((prices[i] / prices[i-1]))
             log_return.append(temp)
         return log_return
 
@@ -125,11 +124,17 @@ class future:
 # russell.margin()
 
 # Sugar Future Margin:
-sugar_data = pd.read_excel('Sugar Price.xlsx')
-sugar_data.drop(['Unnamed: 2', 'Unnamed: 3'], axis=1, inplace=True)
-sugar_data = np.array(sugar_data['Sugar #11 future close price'])
+#%%
+sugar_data = pd.read_excel('Sugar 11 Historical Prices.xls')
+sugar_data = sugar_data[['DATE', 'CLOSE']]
+# sugar_data
+# sugar_data = sugar_data[['']]
+# sugar_data.drop(['Unnamed: 2', 'Unnamed: 3'], axis=1, inplace=True)
+sugar_data = np.array(sugar_data['CLOSE'])
 
 # Here I dont know the last settlement, i used the last day's price to
 # represent the settlement price
+# %%
 sugar = future(sugar_data, settlement=sugar_data[-1], multiplier=1120)
 sugar.margin()
+print(sugar.margin())
